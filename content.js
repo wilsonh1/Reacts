@@ -2,26 +2,36 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     let p = document.getElementsByClassName("_5l37");
     let data = [], ind = {};
     for (let i = 0; i < p.length; i++) {
-        let name = p[i].getElementsByClassName("_8slc")[0].innerText
-        r = {
-            pfp: p[i].getElementsByTagName("img")[0].src,
-            name: name,
+        let url = p[i].getElementsByTagName("img")[0].src;
+        data.push({
+            pfp: url,
+            name: p[i].getElementsByClassName("_8slc")[0].innerText,
             cnt: 0
-        }
-        data.push(r);
-        ind[name] = i;
+        });
+        ind[url] = i;
     }
+    let u = document.getElementsByClassName("_87v3 img")[0].src;
+    data.push({
+        pfp: u,
+        name: "You",
+        cnt: 0
+    });
+    ind[u] = p.length;
     if (message.command == "received") {
         let m = document.getElementsByClassName("_1t_p clearfix");
         for (let row of m) {
-            let name = row.getElementsByClassName("_ih3")[0].innerText
-            let reacts = row.getElementsByClassName("_4kf6")[0];
-            console.log(name);
-            if (reacts)
-                data[ind[name]].cnt += parseInt(reacts.innerText);
+            let url = row.getElementsByClassName("_4ld- _7q1r")[0];
+            if (!url)
+                url = u;
+            else
+                url = url.getElementsByTagName("img")[0].src;
+            console.log(url);
+            let reacts = row.getElementsByClassName("_4kf6");
+            for (let i = 0; i < reacts.length; i++)
+                data[ind[url]].cnt += parseInt(reacts[i].innerText);
         }
     }
-    //console.log(data);
+    console.log(data);
     chrome.runtime.sendMessage({data: data}, function(response) {
         console.log(response.data);
     });

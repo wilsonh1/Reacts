@@ -1,6 +1,8 @@
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     let p = message.data;
     p.forEach(function(row) {
+        if (!row.cnt)
+            return;
         let img = document.createElement("img");
         img.src = row.pfp;
         img.height = 27;
