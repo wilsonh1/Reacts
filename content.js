@@ -17,6 +17,18 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         cnt: 0
     });
     ind[u] = p.length;
+    if (!p.length) {
+        let pm = document.getElementsByClassName("_4ld- _7q1r")[0];
+        if (pm) {
+            let url = pm.getElementsByTagName("img")[0].src;
+            data.push({
+                pfp: url,
+                name: document.getElementsByClassName("_6ybk")[0].innerText,
+                cnt: 0
+            });
+            ind[url] = 1;
+        }
+    }
     if (message.command == "received") {
         let m = document.getElementsByClassName("_1t_p clearfix");
         for (let row of m) {
