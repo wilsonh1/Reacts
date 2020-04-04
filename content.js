@@ -43,9 +43,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
                 data[ind[url]].cnt += parseInt(reacts[i].innerText);
         }
     }
-    data.sort(function(a, b) {
-        return parseInt(b.cnt)-parseInt(a.cnt);
-    });
     console.log(data);
     chrome.runtime.sendMessage({data: data}, function(response) {
         console.log(response.data);

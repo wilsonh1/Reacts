@@ -1,5 +1,8 @@
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     let p = message.data;
+    p.sort(function(a, b) {
+        return parseInt(b.cnt)-parseInt(a.cnt);
+    });
     p.forEach(function(row) {
         if (!row.cnt)
             return;
