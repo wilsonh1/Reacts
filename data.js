@@ -1,10 +1,11 @@
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     let p = message.data;
     p.sort(function(a, b) {
-        return parseInt(b.cnt)-parseInt(a.cnt);
+        return parseInt(b.total)-parseInt(a.total);
     });
+    console.log(p);
     p.forEach(function(row) {
-        if (!row.cnt)
+        if (!row.total)
             return;
         let img = document.createElement("img");
         img.src = row.pfp;
@@ -17,8 +18,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         td = document.createElement("td");
         td.innerText = row.name;
         tr.appendChild(td);
+        for (let i = 0; i < 7; i++) {
+            td = document.createElement("td");
+            td.innerText = row["e" + i];
+            tr.appendChild(td);
+        }
         td = document.createElement("td");
-        td.innerText = row.cnt;
+        td.innerText = row.total;
         tr.appendChild(td);
         document.getElementsByTagName("table")[0].appendChild(tr);
     });
