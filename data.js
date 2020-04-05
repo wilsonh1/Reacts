@@ -34,11 +34,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 });
 
 chrome.storage.sync.get('isr', function(data) {
-    if(data.isr){
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {command: "received"}, function(response) {
-                console.log(response.result);
-            });
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {command: (data.isr) ? "received" : "given"}, function(response) {
+            console.log(response.result);
         });
-    }
+    });
 });

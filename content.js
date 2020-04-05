@@ -1,6 +1,18 @@
-var data, ind;
+const emoji = {
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/t31/2/128/2764.png": "e0",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/tdd/2/128/1f60d.png": "e0",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/taf/2/128/1f606.png": "e1",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/t9c/2/128/1f62e.png": "e2",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/te9/2/128/1f622.png": "e3",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/te7/2/128/1f620.png": "e4",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/td7/2/128/1f44d.png": "e5",
+    "https://static.xx.fbcdn.net/images/emoji.php/v9/t58/2/128/1f44e.png": "e6"
+};
 
-function getReacts (m, u) {
+var data, ind;
+var you;
+
+function getReceived (m, u) {
     console.log(m);
     m.click();
     return new Promise(resolve => {
@@ -13,31 +25,34 @@ function getReacts (m, u) {
             let r = list.getElementsByTagName("li");
             for (let i = 1; i < r.length; i++) {
                 let cnt = parseInt(r[i].innerText);
-                switch (r[i].getElementsByTagName("img")[0].src) {
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/t31/2/128/2764.png":
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/tdd/2/128/1f60d.png":
-                        data[u].e0 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/taf/2/128/1f606.png":
-                        data[u].e1 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/t9c/2/128/1f62e.png":
-                        data[u].e2 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/te9/2/128/1f622.png":
-                        data[u].e3 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/te7/2/128/1f620.png":
-                        data[u].e4 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/td7/2/128/1f44d.png":
-                        data[u].e5 += cnt;
-                        break;
-                    case "https://static.xx.fbcdn.net/images/emoji.php/v9/t58/2/128/1f44e.png":
-                        data[u].e6 += cnt;
-                        break;
-                }
+                console.log(u);
+                data[u][emoji[r[i].getElementsByTagName("img")[0].src]] += cnt;
                 data[u].total += cnt;
+            }
+            document.getElementsByClassName("_3quh _30yy _2t_ _5ixy")[0].click();
+            resolve("success");
+        }, 100);
+    });
+}
+
+function getGiven (m) {
+    console.log(m);
+    m.click();
+    return new Promise(resolve => {
+        setTimeout(function(){
+            let list = document.getElementsByClassName("_3s-3 _2pin");
+            if (!list.length) {
+                resolve("success");
+                return;
+            }
+            for (let i = 0; i < list.length; i++) {
+                let url = list[i].getElementsByClassName("_4ld- _7q1r")[0];
+                url = url.getElementsByTagName("img")[0].src;
+                let e = list[i].getElementsByClassName("_1ift _5m3a img")[0].src;
+                if (!ind.hasOwnProperty(url)) // pm ?
+                    url = you;
+                data[ind[url]][emoji[e]]++;
+                data[ind[url]].total++;
             }
             document.getElementsByClassName("_3quh _30yy _2t_ _5ixy")[0].click();
             resolve("success");
@@ -48,21 +63,20 @@ function getReacts (m, u) {
 async function getData (command) {
     let style = document.styleSheets[0];
     style.addRule("._10", "display: none;", 0);
-    if (command == "received") {
-        let m = document.getElementsByClassName("_1t_p clearfix");
-        for (let row of m) {
-            let url = row.getElementsByClassName("_4ld- _7q1r")[0];
-            if (!url)
-                url = document.getElementsByClassName("_87v3 img")[0].src;
+    let m = document.getElementsByClassName("_1t_p clearfix");
+    for (let row of m) {
+        let url = row.getElementsByClassName("_4ld- _7q1r")[0];
+        if (!url)
+            url = you;
+        else
+            url = url.getElementsByTagName("img")[0].src;
+        console.log(url);
+        let reacts = row.getElementsByClassName("_aou");
+        for (let i = 0; i < reacts.length; i++) {
+            if (command == "received")
+                console.log(await getReceived(reacts[i], ind[url]));
             else
-                url = url.getElementsByTagName("img")[0].src;
-            console.log(url);
-            //let reacts = row.getElementsByClassName("_4kf6");
-            let reacts = row.getElementsByClassName("_aou");
-            for (let i = 0; i < reacts.length; i++) {
-                console.log(await getReacts(reacts[i], ind[url]));
-            }
-            //    data[ind[url]].cnt += parseInt(reacts[i].innerText);
+                console.log(await getGiven(reacts[i]))
         }
     }
     style.deleteRule(0);
@@ -82,14 +96,14 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         });
         ind[url] = i;
     }
-    let u = document.getElementsByClassName("_87v3 img")[0].src;
+    you = document.getElementsByClassName("_87v3 img")[0].src;
     data.push({
-        pfp: u,
+        pfp: you,
         name: "You",
         e0: 0, e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 0,
         total: 0
     });
-    ind[u] = p.length;
+    ind[you] = p.length;
     if (!p.length) {
         let pm = document.getElementsByClassName("_4ld- _7q1r")[0];
         if (pm) {
