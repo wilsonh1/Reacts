@@ -46,6 +46,8 @@ function getReacts (m, u) {
 }
 
 async function getData (command) {
+    let style = document.styleSheets[0];
+    style.addRule("._10", "display: none;", 0);
     if (command == "received") {
         let m = document.getElementsByClassName("_1t_p clearfix");
         for (let row of m) {
@@ -63,6 +65,7 @@ async function getData (command) {
             //    data[ind[url]].cnt += parseInt(reacts[i].innerText);
         }
     }
+    style.deleteRule(0);
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
