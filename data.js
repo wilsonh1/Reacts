@@ -20,8 +20,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         tr.appendChild(td);
         for (let i = 0; i < 7; i++) {
             td = document.createElement("td");
-            if (row["e" + i])
-                td.innerText = row["e" + i];
+            td.innerText = row["e" + i];
             tr.appendChild(td);
         }
         td = document.createElement("td");
